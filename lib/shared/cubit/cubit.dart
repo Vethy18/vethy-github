@@ -9,8 +9,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sqflite/sqflite.dart';
-
-
 import '../../modules/products_screen/products_screen.dart';
 import '../components/constans.dart';
 
@@ -20,10 +18,7 @@ class LoginCubit extends Cubit<LoginStates> {
   LoginCubit() : super(LoginInitialState());
   bool ispassword = true;
  Database? database;
-
   List <Map> services = [];
-
-
 
   static LoginCubit get(context) => BlocProvider.of(context);
 
@@ -44,7 +39,7 @@ class LoginCubit extends Cubit<LoginStates> {
             'CREATE TABLE users (id INTEGER PRIMARY  KEY,name TEXT, tel INTEGER , email TEXT, pass TEXT, confpas TEXT)')
 
             .then((value) {
-          print('table created');
+          print('table users created');
         }).catchError((error) {
           print('error when ${error.toString()}');
         });
@@ -161,17 +156,13 @@ class LoginCubit extends Cubit<LoginStates> {
       });
     });
   }
-  void updateProduct ({
-    @required name,
-    @required quantity,
-    @required image,
-    @required description,
-    @required id,
-  })async
+   updateProduct ( String name, String quantity, File? image,String description, String id,
+
+  )async
   {
 
     await database!.rawUpdate('UPDATE products SET name=?, quantity=? , image=? , description=? WHERE id=?',
-        ['$name',quantity,'$image','$description',id]
+        [name,quantity,'$image',description,id]
     ).
     then((value) {
       emit(UpdateProductState());
@@ -219,16 +210,20 @@ class LoginCubit extends Cubit<LoginStates> {
 
 
   File? file;
-  // Uint8List? bytes;
-  // String? img64;
+  // var fileContent = file.readAsBytesSync();
+  // var fileContentBase64 =
+  var bytes;
+
   Future imagePicker() async {
     final myfile = await ImagePicker().pickImage(source: ImageSource.gallery);
 
       file = File(myfile!.path);
-    // bytes = File(file!.path).readAsBytes() as Uint8List? ;
-    // img64= base64Encode(bytes!);
- emit(ImagePickerState());
- return file;
+     bytes = File(file!.path).readAsBytesSync()  ;
+     img64= base64.encode(bytes);
+     // ListProducts.add(img64);
+    emit(ImagePickerState());
+   return img64;
+
   }
 
 
