@@ -1,5 +1,4 @@
-import 'package:cado/Api/apiService.dart';
-import 'package:cado/modules/products_screen/products_screen.dart';
+
 import 'package:cado/shared/cubit/cubit.dart';
 import 'package:cado/shared/cubit/states.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,11 +15,15 @@ class LoginScreen extends StatelessWidget
   var username = TextEditingController();
   var password = TextEditingController();
 
+  LoginScreen({Key? key}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context)=> LoginCubit()..createDatabase(),
+    return BlocProvider<LoginCubit>(
+      create: (_)=> LoginCubit()..createDatabase(),
+      lazy: false,
+
       child: BlocConsumer<LoginCubit,LoginStates>(
         listener: (context,state){
 

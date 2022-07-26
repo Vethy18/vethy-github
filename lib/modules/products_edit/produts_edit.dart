@@ -1,6 +1,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cado/shared/cubit/states.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 
+import '../../main.dart';
 import '../../shared/components/components.dart';
 import '../../shared/components/constans.dart';
 import '../../shared/cubit/cubit.dart';
@@ -38,6 +40,12 @@ class _ProductsEditState extends State<ProductsEdit> {
   //   });
   //   return file!;
   // }
+  var image;
+  var changeNameController = TextEditingController();
+  var changeQaunatityController = TextEditingController();
+  var changedescriptionController = TextEditingController();
+  bool? choosed=false;
+  late File file;
 
   @override
   void initState() {
@@ -47,9 +55,14 @@ class _ProductsEditState extends State<ProductsEdit> {
     print(widget.image);
     print(widget.image.length);
     print(widget.description);
-    changedescriptionController.text=widget.description;
-    changeQaunatityController.text=widget.quantity;
-    changeNameController.text= widget.nameProduct;
+
+    changedescriptionController.text =  widget.description;
+    changeQaunatityController.text =    widget.quantity;
+    changeNameController.text =        widget.nameProduct;
+    setState((){
+    img64 = widget.image;
+      image= img64;
+    });
       //
       //  setState((){
       // img64 =widget.image;
@@ -66,11 +79,6 @@ class _ProductsEditState extends State<ProductsEdit> {
 
     super.initState();
   }
-  var changeNameController = TextEditingController();
-  var changeQaunatityController = TextEditingController();
-  var changedescriptionController = TextEditingController();
-    bool? choosed=false;
-   late File file;
 
 
 
@@ -98,7 +106,11 @@ class _ProductsEditState extends State<ProductsEdit> {
                           //      Image.file(File:'/data/user/0/com.example.cado/cache/image_picker935748229958109805.jpg'),
 
 
-                          choosed==false ? Container(child:Text(widget.image)):Container(child:Image.file(file)),
+                          choosed==false ? Container(child:Image(
+                            image: MemoryImage(base64Decode(image)),
+                          ) ,):
+
+                          Container(child:Image.file(file)),
 
                             Row(
 
@@ -126,16 +138,12 @@ class _ProductsEditState extends State<ProductsEdit> {
                             Text('description:'),
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 10.0),
+
                               child: TextFormField(
 
+                                controller: changedescriptionController,
                                 keyboardType: TextInputType.text,
                                 maxLines: 1,
-                                // initialValue: widget.description,
-                                controller: changedescriptionController,
-
-                                // initialValue: 'if you want to take any photo'
-                                //     '\n  with a high  quality be sue \n'
-                                //     'that this Camere is what you\'re loocking for',
                                 decoration: InputDecoration(
                                   border :InputBorder.none ,
                                 ),
@@ -144,7 +152,6 @@ class _ProductsEditState extends State<ProductsEdit> {
                             ),
                             SizedBox(height: 10.0,),
                             SizedBox(height: 20.0,),
-
                           ],
                         ),
                         SizedBox(height: 20.0,),
@@ -157,7 +164,6 @@ class _ProductsEditState extends State<ProductsEdit> {
                               child: Container(
                                 width: 160.0,
                                 child: TextFormField(
-
                                   controller: changeQaunatityController,
                                   keyboardType: TextInputType.number,
                                   inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
@@ -199,13 +205,16 @@ class _ProductsEditState extends State<ProductsEdit> {
                               ),
                               child: MaterialButton(
                                 onPressed: (){
-                                 LoginCubit.get(context).updateProduct
+                                 LoginCubit.get(context).updateProduct(
+                                     changeNameController.text,
+                                     changeQaunatityController.text,
+                                     file,
+                                     changedescriptionController.text,
+                                     widget.idproduct
+                                 )
                                    (
-                                     name:changeNameController.text,
-                                   quantity: changeQaunatityController.text,
-                                     image: file,
-                                     description: changedescriptionController.text,
-                                      id: widget.idproduct);
+
+                                 );
                                      print(widget.nameProduct);
                                      print(widget.quantity);
                                       print(widget.image);

@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../main.dart';
 import '../../shared/components/constans.dart';
 
 class AddProduct extends StatefulWidget {
@@ -143,7 +144,7 @@ class _AddProductState extends State<AddProduct> {
                             l.insertProductToDatabase(name:
                              nameConntrroller.text,
                                 quantity: quantityConntrroller.text,
-                                image: LoginCubit.get(context).file!,
+                                image: img64!,
                                 description: descriptionContrroller.text,
                               context: context
                             );
