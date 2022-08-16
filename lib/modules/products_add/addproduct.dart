@@ -1,16 +1,11 @@
 
-import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
 import 'package:cado/shared/cubit/cubit.dart';
 import 'package:cado/shared/cubit/states.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 
-import '../../main.dart';
-import '../../shared/components/constans.dart';
+import '../../shared/components/constant.dart';
 
 class AddProduct extends StatefulWidget {
   const AddProduct({Key? key}) : super(key: key);
@@ -19,101 +14,204 @@ class AddProduct extends StatefulWidget {
 }
 class _AddProductState extends State<AddProduct> {
 
-  var descriptionContrroller = TextEditingController();
-  var nameConntrroller=     TextEditingController();
-  var quantityConntrroller= TextEditingController();
-
+  var descriptionController = TextEditingController();
+  var nameController=     TextEditingController();
+  var quantityController= TextEditingController();
+  var buyController=TextEditingController();
+  var sellController=TextEditingController();
 
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context)=> LoginCubit()..createDatabase(),
-      child: BlocConsumer<LoginCubit,LoginStates>(
-        listener: (context,state){
-          if(state is InsertProductToDataBaseState)
-            {
-              Navigator.pop(context);
-            }
-        },
-        builder: (context,state){
-         var l = LoginCubit.get(context);
-         return Scaffold(
+    return BlocConsumer<LoginCubit,LoginStates>(
+      listener: (context,state){
+        if(state is InsertProductToDataBaseState)
+          {
+            Navigator.pop(context);
+          }
+      },
+      builder: (context,state){
+       var l = LoginCubit.get(context);
+       return Scaffold(
 
-          body: SafeArea(
-            child: SingleChildScrollView(
+        body: SafeArea(
+          child: SingleChildScrollView(
 
-              child: Column(
-                  children:[
-                    Column(
+            child: Column(
+                children:[
+                  Column(
 
+                    children: [
+
+                      const SizedBox(height: 30.0,),
+                      Row(
+
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextButton(onPressed:
+                              (){
+                            setState((){
+                             LoginCubit.get(context).imagePicker();
+
+                            });
+                              },
+                              child: const Icon(
+                                  Icons.camera_alt
+
+                              )
+
+                          ),
+                          const Text('upload photo'),
+                        ],
+
+                      ),
+                      const Text(
+                          'description:'),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: TextFormField(
+
+                         controller: descriptionController,
+                          textInputAction: TextInputAction.newline,
+                          textAlignVertical:TextAlignVertical.bottom ,
+                          keyboardType: TextInputType.text,
+                          decoration: const InputDecoration(
+                            border :InputBorder.none ,
+
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10.0,),
+                    ],
+                  ),
+                  const SizedBox(height: 20.0,),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15.0)
+                          ),
+                          width: 160.0,
+                          child: TextFormField(
+                            controller: quantityController,
 
-                        SizedBox(height: 30.0,),
-                        Row(
+                            // initialValue: 0.toString(),
 
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            TextButton(onPressed:
-                                (){
-                              setState((){
-                               LoginCubit.get(context).imagePicker();
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                            decoration: const InputDecoration(
 
-                              });
-                                },
-                                child:
-                                Icon(
-                                    Icons.camera_alt
-
+                                labelText: 'quantity',
+                                border: OutlineInputBorder(),
+                                prefixIcon: Icon(
+                                  Icons.numbers,
                                 )
 
                             ),
-                            Text('upload photo'),
-                          ],
-
+                          ),
                         ),
-                        Text('description:'),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        const SizedBox(
+                          width: 25.0,
+                        ),
+                        Container(
+
+                          width: 160.0,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15.0)
+                          ),
+
                           child: TextFormField(
-                           controller: descriptionContrroller,
+                            controller: nameController,
                             keyboardType: TextInputType.text,
-                            // focusNode: primaryFocus,
-                            decoration: InputDecoration(
-                              border :InputBorder.none ,
+                            decoration: const InputDecoration(
+                                labelText: ' product name ',
+                                border: OutlineInputBorder(),
+                                prefixIcon: Icon(
+                                  Icons.title,
+                                )
+
                             ),
                           ),
                         ),
-                        SizedBox(height: 10.0,),
+
+
                       ],
                     ),
-                    SizedBox(height: 20.0,),
-                    Row(
+                  ),
+                  const SizedBox(
+                    height: 20.0,),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        Container(
 
-                          child: Container(
-                            width: 160.0,
-                            child: TextFormField(
-                              controller: quantityConntrroller,
-                              // initialValue: 0.toString(),
+                          width: 160.0,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15.0)
+                          ),
 
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-                              decoration: InputDecoration(
+                          child: TextFormField(
+                            controller: buyController,
 
-                                  labelText: 'Add quantity',
-                                  border: OutlineInputBorder(),
-                                  prefixIcon: Icon(
-                                    Icons.numbers,
-                                  )
+                            // initialValue: 0.toString(),
 
-                              ),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                            decoration: const InputDecoration(
+
+                                labelText: 'prix d\'achat',
+                                border: OutlineInputBorder(),
+                                prefixIcon: Icon(
+                                  Icons.numbers,
+                                )
+
                             ),
                           ),
                         ),
+
+                        const SizedBox(
+                          width: 25.0,
+                        ),
+                        Container(
+                          width: 160.0,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15.0)
+                          ),
+                          child: TextFormField(
+                            controller: sellController,
+
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                            decoration: const InputDecoration(
+
+                                labelText: 'prix d\'vente',
+                                border: OutlineInputBorder(),
+                                prefixIcon: Icon(
+                                  Icons.numbers,
+                                )
+
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 25.0,
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.all(30.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
                         Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20.0),
@@ -126,7 +224,7 @@ class _AddProductState extends State<AddProduct> {
                                   context
                               );
                             },
-                            child: Text('Cancel',
+                            child: const Text('Cancel',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20.0,
@@ -134,6 +232,10 @@ class _AddProductState extends State<AddProduct> {
                             ),
                           ),
                         ),
+                        const SizedBox(
+                          width: 20.0,
+                        ),
+
                         Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20.0),
@@ -141,15 +243,16 @@ class _AddProductState extends State<AddProduct> {
                           ),
                           child: MaterialButton(onPressed: (){
 
-                            l.insertProductToDatabase(name:
-                             nameConntrroller.text,
-                                quantity: quantityConntrroller.text,
+                            l.insertProductToDatabase(name: nameController.text,
+                                quantity: quantityController.text,
                                 image: img64!,
-                                description: descriptionContrroller.text,
-                              context: context
+                                description: descriptionController.text,
+                                buy: buyController.text,
+                                sell: sellController.text,
+                                context: context
                             );
                           },
-                            child: Text('Save',
+                            child: const Text('Save',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20.0,
@@ -160,37 +263,17 @@ class _AddProductState extends State<AddProduct> {
 
                       ],
                     ),
-                    SizedBox(height: 20.0,),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  )
+                ]
 
-                      child: Container(
-                        width: double.infinity,
-                        child: TextFormField(
-                          controller: nameConntrroller,
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                              labelText: ' product name ',
-                              // border: OutlineInputBorder(),
-                              prefixIcon: Icon(
-                                Icons.title,
-                              )
-
-                          ),
-                        ),
-                      ),
-                    ),
-                  ]
-
-              ),
             ),
+          ),
 
-          )
+        )
 
-          );
-        },
+        );
+      },
 
-      ),
     );
   }
 }

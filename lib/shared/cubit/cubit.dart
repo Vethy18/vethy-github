@@ -4,13 +4,14 @@ import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
 import 'package:cado/shared/cubit/states.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sqflite/sqflite.dart';
 import '../../modules/products_screen/products_screen.dart';
-import '../components/constans.dart';
+import '../components/constant.dart';
 
 
 class LoginCubit extends Cubit<LoginStates> {
@@ -19,6 +20,7 @@ class LoginCubit extends Cubit<LoginStates> {
   bool ispassword = true;
  Database? database;
   List <Map> services = [];
+
 
   static LoginCubit get(context) => BlocProvider.of(context);
 
@@ -31,9 +33,11 @@ class LoginCubit extends Cubit<LoginStates> {
     print('*********************');
     openDatabase(
       'qwert.db',
-      version: 1,
+      version: 2,
       onCreate: (database, version) {
-        print('database created');
+        if (kDebugMode) {
+          print('database created');
+        }
 
         database.execute(
             'CREATE TABLE users (id INTEGER PRIMARY  KEY,name TEXT, tel INTEGER , email TEXT, pass TEXT, confpas TEXT)')
@@ -44,18 +48,27 @@ class LoginCubit extends Cubit<LoginStates> {
           print('error when ${error.toString()}');
         });
         database.execute(
-            'CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT, quantity TEXT , image TEXT, description TEXT)'
+            'CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT, quantity TEXT , value TEXT , image TEXT,'
+                ' description TEXT, buy Double, sell Double)'
         ).then((value) {
-          print('table products created');
+          if (kDebugMode) {
+            print('table products created');
+          }
         }).catchError((error) {
-          print('error ${error.toString()}');
+          if (kDebugMode) {
+            print('error ${error.toString()}');
+          }
         });
       },
       onOpen: (database) {
-        print('database opened');
+        if (kDebugMode) {
+          print('database opened');
+        }
         getDataFromDatabase(database).then((value) {
           services = value;
-          print(services);
+          if (kDebugMode) {
+            print(services);
+          }
           emit(GetDataBaseState());
         });
         getProductFromDatabase(database);
@@ -99,8 +112,9 @@ class LoginCubit extends Cubit<LoginStates> {
         });
       });
       print(database);
-    } else
+    } else {
       print('les deux mots de passes ne sont pas conformes');
+    }
   }
 
   Future<List<Map>> Login({
@@ -116,21 +130,31 @@ class LoginCubit extends Cubit<LoginStates> {
     await database!.rawQuery(
         "SELECT name,pass FROM users WHERE name='$username' and pass='$passowrd'"
     ).then((value) {
-      print(value);
+      if (kDebugMode) {
+        print(value);
+      }
 
-      print(value.runtimeType);
+      if (kDebugMode) {
+        print(value.runtimeType);
+      }
 
       if (value.isNotEmpty) {
-        print('blllllllllllllllllll');
+        if (kDebugMode) {
+          print('blllllllllllllllllll');
+        }
         emit(AuthentificationState());
         Navigator.push(context,
           MaterialPageRoute(builder:
-              (context) => ProductsScreen()
+              (context) =>   ProductsScreen()
           ),
         );
       }
       else {
-        print('erreur');
+        if (kDebugMode) {
+          print('error');
+        }
+        emit(AuthentificationErrorState());
+
       }
     });
 
@@ -143,26 +167,37 @@ class LoginCubit extends Cubit<LoginStates> {
     @required quantity,
     @required image,
     @required description,
-    @required context
+    @required buy,
+    @required sell,
+     checked='false' ,
+    @required context,
+
+
   }) async {
     await database!.transaction((txn) async {
-      txn.rawInsert('INSERT INTO products (name,quantity,image,description)'
-          'VALUES("$name",$quantity,"$image","$description")'
+
+      txn.rawInsert('INSERT INTO products (name,quantity,image,description,buy,sell,value)'
+          'VALUES("$name",$quantity,"$image","$description","$buy","$sell",$checked)'
       ).then((value) {
-        print('$value inserted successfully');
+        if (kDebugMode) {
+          print('$value inserted successfully');
+        }
         emit(InsertProductToDataBaseState());
         getProductFromDatabase(database);
 
       });
     });
   }
-   updateProduct ( String name, String quantity, File? image,String description, String id,
+   updateProduct ( String name, String quantity, String? image,
+       String description, String id,
+       String buy,String sell,
 
   )async
   {
 
-    await database!.rawUpdate('UPDATE products SET name=?, quantity=? , image=? , description=? WHERE id=?',
-        [name,quantity,'$image',description,id]
+    await database!.rawUpdate('UPDATE products SET name=?, quantity=? , image=? , description=?,buy=?,'
+        'sell=?  WHERE id=?',
+        [name,quantity,image,description,buy,sell,id]
     ).
     then((value) {
       emit(UpdateProductState());
@@ -170,7 +205,9 @@ class LoginCubit extends Cubit<LoginStates> {
 
     }).catchError((onError){
 
-      print('error when updating ${onError.toString()}');
+      if (kDebugMode) {
+        print('error when updating ${onError.toString()}');
+      }
     });
 
   }
@@ -178,7 +215,7 @@ class LoginCubit extends Cubit<LoginStates> {
   void deleteProduct ({
 
     @required id,
-   @required context,
+
   })async
   {
 
@@ -188,15 +225,16 @@ class LoginCubit extends Cubit<LoginStates> {
     then((value) {
       emit(DeleteProductState());
       getProductFromDatabase(database);
-     Navigator.pop(context);
+
 
     }).catchError((onError){
 
-      print('error when deleting ${onError.toString()}');
+      if (kDebugMode) {
+        print('error when deleting ${onError.toString()}');
+      }
     });
 
   }
-
 
 
   void getProductFromDatabase(database) async {
@@ -207,22 +245,49 @@ class LoginCubit extends Cubit<LoginStates> {
 
     });
   }
+   searchProduct(
+      String value,
+
+  )
+ async {
+    await database?.query('products', where: 'name LIKE?',whereArgs: ['%$value%']).
+    then((value)
+    {
+    ListProducts=value;
+      emit(SearchProductState());
+
+
+    }
+    ).catchError((onError){
+      if (kDebugMode) {
+        print('error when ${onError.toString()}');
+      }
+    });
+
+  }
 
 
   File? file;
-  // var fileContent = file.readAsBytesSync();
-  // var fileContentBase64 =
+
   var bytes;
 
   Future imagePicker() async {
     final myfile = await ImagePicker().pickImage(source: ImageSource.gallery);
 
       file = File(myfile!.path);
-     bytes = File(file!.path).readAsBytesSync()  ;
+     bytes = File(file!.path).readAsBytesSync() ;
      img64= base64.encode(bytes);
      // ListProducts.add(img64);
     emit(ImagePickerState());
    return img64;
+
+  }
+    bool isSelected=false;
+
+  void changeSelectedItem()
+  {
+    isSelected =!isSelected;
+    emit(ChangeSelectedItemState());
 
   }
 
