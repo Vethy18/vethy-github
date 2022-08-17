@@ -1,10 +1,8 @@
 
 import 'package:cado/shared/cubit/cubit.dart';
 import 'package:cado/shared/cubit/states.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sqflite/sqflite.dart';
 import '../signup/signup_screen.dart';
 
 class LoginScreen extends StatelessWidget
@@ -22,10 +20,7 @@ class LoginScreen extends StatelessWidget
   Widget build(BuildContext context) {
     return BlocConsumer<LoginCubit,LoginStates>(
       listener: (context,state){
-             if(state is AuthentificationErrorState)
-               {
-
-               }
+            
       },
       builder: (context,state){
         var c =LoginCubit.get(context);

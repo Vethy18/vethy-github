@@ -48,7 +48,7 @@ class LoginCubit extends Cubit<LoginStates> {
           print('error when ${error.toString()}');
         });
         database.execute(
-            'CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT, quantity TEXT , value TEXT , image TEXT,'
+            'CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT, quantity TEXT , value INTEGER , image TEXT,'
                 ' description TEXT, buy Double, sell Double)'
         ).then((value) {
           if (kDebugMode) {
@@ -169,7 +169,7 @@ class LoginCubit extends Cubit<LoginStates> {
     @required description,
     @required buy,
     @required sell,
-     checked='false' ,
+     int? checked=0 ,
     @required context,
 
 
@@ -177,7 +177,7 @@ class LoginCubit extends Cubit<LoginStates> {
     await database!.transaction((txn) async {
 
       txn.rawInsert('INSERT INTO products (name,quantity,image,description,buy,sell,value)'
-          'VALUES("$name",$quantity,"$image","$description","$buy","$sell",$checked)'
+          'VALUES("$name",$quantity,"$image","$description","$buy","$sell","$checked")'
       ).then((value) {
         if (kDebugMode) {
           print('$value inserted successfully');
@@ -211,7 +211,19 @@ class LoginCubit extends Cubit<LoginStates> {
     });
 
   }
-
+  Future<void> updateSelected({
+   @required value,
+    @required id
+}) async {
+    await database!.rawQuery('UPDATE products SET value=? WHERE id=?',[value,id]).then((value) {
+      emit(UpdateSelectedProductState());
+      getProductFromDatabase(database);
+    }).catchError((onError){
+      if (kDebugMode) {
+        print('error when selecting${onError.toString()}');
+      }
+    });
+  }
   void deleteProduct ({
 
     @required id,
@@ -239,9 +251,9 @@ class LoginCubit extends Cubit<LoginStates> {
 
   void getProductFromDatabase(database) async {
      await database.rawQuery('SELECT *FROM products').then((value) {
-      ListProducts = value;
+      listProducts = value;
       emit(GetProductState());
-      print(ListProducts);
+      print(listProducts);
 
     });
   }
@@ -253,7 +265,7 @@ class LoginCubit extends Cubit<LoginStates> {
     await database?.query('products', where: 'name LIKE?',whereArgs: ['%$value%']).
     then((value)
     {
-    ListProducts=value;
+    listProducts=value;
       emit(SearchProductState());
 
 

@@ -10,10 +10,7 @@ import '../../shared/components/constant.dart';
 import '../products_add/addproduct.dart';
 
 class ProductsScreen extends StatefulWidget {
-   ProductsScreen({Key? key,
-
-
-  }) : super(key: key);
+   const ProductsScreen({Key? key,}) : super(key: key);
 
 
   @override
@@ -35,7 +32,9 @@ var searchController=TextEditingController();
 
     super.initState();
 
-print(ListProducts);
+if (kDebugMode) {
+  print(listProducts);
+}
 
     // selected=ListProducts.cast();
   }
@@ -92,6 +91,7 @@ print(ListProducts);
 
                Container(
                 width: 160.0,
+                decoration: const BoxDecoration(),
                 child: TextFormField(
                   onChanged: (value){
 
@@ -129,8 +129,8 @@ print(ListProducts);
           body:SafeArea(
 
             child: ConditionalBuilder(
-              condition:ListProducts.isNotEmpty,
-              builder: (context)=>ListView.builder(itemCount: ListProducts.length,
+              condition:listProducts.isNotEmpty,
+              builder: (context)=>ListView.builder(itemCount: listProducts.length,
 
                   itemBuilder:
                    (context, index) {
@@ -147,105 +147,67 @@ print(ListProducts);
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                        ListProducts[index]['name']
+                                        listProducts[index]['name']
 
                                     ),
                                     const SizedBox(
                                         width: 15.0),
                                     Text(
-                                        ListProducts[index]['quantity'].toString()
+                                        listProducts[index]['quantity'].toString()
                                     ),
                                     const SizedBox(
                                         width: 15.0),
                                     Text(
-                                        '${ListProducts[index]['buy'].toString()} UM'
+                                        '${listProducts[index]['buy'].toString()} UM'
                                     ),
                                     const SizedBox(
                                         width: 15.0),
-                                    Text('${ListProducts[index]['sell'].toString()} UM'
+                                    Text('${listProducts[index]['sell'].toString()} UM'
                                     ),
                                     const SizedBox(
                                         width: 15.0),
 
 
-                                    // CheckboxListTile(
-                                    //   title: Text(ListProducts[index]['name']),
-                                    //
-                                    //     value: ListProducts[index]['value']=='false'?false:true,
-                                    //     onChanged: (value){
-                                    //       ListProducts[index]['value']=value;
-                                    //     }
-                                    // ),
+
 
                                     Checkbox(
 
-                                      value:ListProducts[index]['value']=='0'?false:true,
+                                      value:listProducts[index]['value']==0?false:true,
 
-                                        onChanged: (value){
+                                        onChanged:  (value)async{
                                           if (kDebugMode) {
                                             print(value);
-                                            print(ListProducts[index]['value']);
-                                            setState(()  {
-                                              ListProducts[index]['value']=value;
+                                            print(listProducts[index]['value']);
 
-                                            });
                                           }
-                                          if (kDebugMode) {
-                                            print(ListProducts);
-                                          }
-
+                                          setState((){});
+                                          await  LoginCubit.get(context).updateSelected(value: value,
+                                              id: listProducts[index]['id']);
 
                                         },
 
                                       activeColor: Colors.green,
 
 
+
                                     ),
 
-                                    // IconButton(
-                                    //     onPressed: (){
-                                    //
-                                    //           if(ListProducts[index]=ListProducts[index]) {
-                                    //             LoginCubit.get(context).
-                                    //          changeSelectedItem();
-                                    //           }
-                                    //
-                                    //          if (kDebugMode) {
-                                    //            print(ListProducts[index]['value'] =='false');
-                                    //
-                                    //          }
-                                    //         // print(values);
-                                    //
-                                    //     },
-                                    //
-                                    //
-                                    //     icon: LoginCubit.get(context).isSelected?
-                                    //         const Icon(
-                                    //           Icons.check_box,
-                                    //           color: Colors.green,
-                                    //         ):
-                                    //         const Icon(
-                                    //           Icons.check_box,
-                                    //           color: Colors.grey,
-                                    //         )
-                                    // ),
+
                                     Expanded(
                                       child: TextButton(
                                    onPressed: (){
-                                      if (kDebugMode) {
-                                        print(ListProducts);
-                                      }
+
                                       Navigator.push(
                                         context,MaterialPageRoute(builder:(context)=>
                                           ProductsEdit(
 
-                                          idproduct:ListProducts[index]['id'].toString(),
-                                          nameProduct:ListProducts[index]['name'],
-                                          quantity:ListProducts[index]['quantity'],
-                                          description:ListProducts[index]['description'],
-                                          image:ListProducts[index]['image'],
-                                            buy: ListProducts[index]['buy'].toString(),
-                                            sell: ListProducts[index]['sell'].toString(),
+                                          idproduct:listProducts[index]['id'].toString(),
+                                          nameProduct:listProducts[index]['name'],
+                                          quantity:listProducts[index]['quantity'],
+                                          description:listProducts[index]['description'],
+                                          image:listProducts[index]['image'],
+                                            buy: listProducts[index]['buy'].toString(),
+                                            sell: listProducts[index]['sell'].toString(),
                                       )
                                           ),
 

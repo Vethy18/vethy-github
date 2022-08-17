@@ -20,6 +20,7 @@ class InsertProductToDataBaseState extends LoginStates{}
 class GetProductState extends LoginStates{}
 
 class UpdateProductState extends LoginStates{}
+class UpdateSelectedProductState extends LoginStates{}
 
 class DeleteProductState extends LoginStates{}
 
