@@ -22,6 +22,8 @@ class LoginCubit extends Cubit<LoginStates> {
   List <Map> services = [];
 
 
+
+
   static LoginCubit get(context) => BlocProvider.of(context);
 
   void passowrd() {
@@ -59,6 +61,15 @@ class LoginCubit extends Cubit<LoginStates> {
             print('error ${error.toString()}');
           }
         });
+        database.execute(
+            'CREATE TABLE users (id INTEGER PRIMARY  KEY,name TEXT, tel INTEGER , email TEXT, pass TEXT, confpas TEXT)')
+
+            .then((value) {
+          print('table users created');
+        }).catchError((error) {
+          print('error when ${error.toString()}');
+        });
+
       },
       onOpen: (database) {
         if (kDebugMode) {
@@ -72,7 +83,7 @@ class LoginCubit extends Cubit<LoginStates> {
           emit(GetDataBaseState());
         });
         getProductFromDatabase(database);
-        // getProductsInfo(database,)
+
       },
 
     ).then((value) {
@@ -119,16 +130,16 @@ class LoginCubit extends Cubit<LoginStates> {
 
   Future<List<Map>> Login({
     @required username,
-    @required passowrd,
+    @required password,
     @required context
   }) async {
     print('login');
 
     print(username);
-    print(passowrd);
+    print(password);
 
     await database!.rawQuery(
-        "SELECT name,pass FROM users WHERE name='$username' and pass='$passowrd'"
+        "SELECT name,pass FROM users WHERE name='$username' and pass='$password'"
     ).then((value) {
       if (kDebugMode) {
         print(value);
@@ -145,7 +156,7 @@ class LoginCubit extends Cubit<LoginStates> {
         emit(AuthentificationState());
         Navigator.push(context,
           MaterialPageRoute(builder:
-              (context) =>   ProductsScreen()
+              (context) => const  ProductsScreen()
           ),
         );
       }
@@ -178,12 +189,14 @@ class LoginCubit extends Cubit<LoginStates> {
 
       txn.rawInsert('INSERT INTO products (name,quantity,image,description,buy,sell,value)'
           'VALUES("$name",$quantity,"$image","$description","$buy","$sell","$checked")'
-      ).then((value) {
+      ).then((value) async {
         if (kDebugMode) {
+
           print('$value inserted successfully');
+
         }
         emit(InsertProductToDataBaseState());
-        getProductFromDatabase(database);
+        await getProductFromDatabase(database);
 
       });
     });
@@ -211,19 +224,24 @@ class LoginCubit extends Cubit<LoginStates> {
     });
 
   }
-  Future<void> updateSelected({
-   @required value,
-    @required id
-}) async {
-    await database!.rawQuery('UPDATE products SET value=? WHERE id=?',[value,id]).then((value) {
-      emit(UpdateSelectedProductState());
-      getProductFromDatabase(database);
-    }).catchError((onError){
-      if (kDebugMode) {
-        print('error when selecting${onError.toString()}');
-      }
-    });
-  }
+
+
+//   Future<void> updateSelected({
+//    @required value,
+//     @required id
+// }) async {
+//     await database!.rawQuery('UPDATE products SET value=? WHERE id=?',[value,id]).then((value) {
+//       emit(UpdateSelectedProductState());
+//       getProductFromDatabase(database);
+//     }).catchError((onError){
+//       if (kDebugMode) {
+//         print('error when selecting${onError.toString()}');
+//       }
+//     });
+//   }
+
+
+
   void deleteProduct ({
 
     @required id,
@@ -249,15 +267,25 @@ class LoginCubit extends Cubit<LoginStates> {
   }
 
 
-  void getProductFromDatabase(database) async {
-     await database.rawQuery('SELECT *FROM products').then((value) {
+   getProductFromDatabase(database) async {
+     await database.rawQuery('SELECT *FROM products').then((value) async {
       listProducts = value;
+
       emit(GetProductState());
-      print(listProducts);
+
+      print('****id** ${listProducts.length} ');
 
     });
   }
-   searchProduct(
+   // productWithValue(list) async{
+   //   for(int i=0; i < list.length; i++){
+   //     products.add({'id':list[i]['id'],'name':list[i]['name'],'value':false,'image':list[i]['image'],'quantity':list[i]['quantity'],'description':list[i]['description'],'sell':list[i]['sell'],'buy':list[i]['buy']});
+   //   }
+   //   print('------------lenght=--------------');
+   //   print(products.length);
+   // }
+
+  searchProduct(
       String value,
 
   )
@@ -266,6 +294,7 @@ class LoginCubit extends Cubit<LoginStates> {
     then((value)
     {
     listProducts=value;
+
       emit(SearchProductState());
 
 
@@ -296,12 +325,12 @@ class LoginCubit extends Cubit<LoginStates> {
   }
     bool isSelected=false;
 
-  void changeSelectedItem()
-  {
-    isSelected =!isSelected;
-    emit(ChangeSelectedItemState());
-
-  }
+  // void changeSelectedItem()
+  // {
+  //   isSelected =!isSelected;
+  //   emit(ChangeSelectedItemState());
+  //
+  // }
 
 
 }
