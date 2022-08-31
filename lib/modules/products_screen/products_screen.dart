@@ -26,10 +26,13 @@ var searchController=TextEditingController();
 
 
 
-List  selected= [];
-List  selectedl= [];
+// List  selected= [];
 
-List idSelected = [];
+List listSelectedItem=[];
+
+// List  selectedl= [];
+//
+// List idSelected = [];
 
 @override
   void initState()
@@ -50,21 +53,32 @@ List idSelected = [];
     //   'buy':listProducts[i]['buy']});
     //
     // }
-    for(int i=1; i < listProducts.length; i++){
-      setState((){
-        selectedl.add({'id':listProducts[i]['id'],
-          'name':listProducts[i]['name'],
-          'value':false,'image':listProducts[i]['image'],
-          'quantity':listProducts[i]['quantity'],
-          'description':listProducts[i]['description'],
-          'sell':listProducts[i]['sell'],
-          'buy':listProducts[i]['buy']});
+  // for(int i=0; i < listProducts.length; i++){
+  //   selectedl.add({'id':listProducts[i]['id'],
+  //     'name':listProducts[i]['name'],
+  //     'value':false,'image':listProducts[i]['image'],
+  //     'quantity':listProducts[i]['quantity'],
+  //     'description':listProducts[i]['description'],
+  //     'sell':listProducts[i]['sell'],
+  //     'buy':listProducts[i]['buy']});
+  //
+  //
+  //
+  // }
+  // for(int i=0; i < listProducts.length; i++){
+  //   listItem.add({'id':listProducts[i]['id'],
+  //     'name':listProducts[i]['name'],
+  //     'value':false,'image':listProducts[i]['image'],
+  //     'quantity':listProducts[i]['quantity'],
+  //     'description':listProducts[i]['description'],
+  //     'sell':listProducts[i]['sell'],
+  //     'buy':listProducts[i]['buy']});
+  //
+  //
+  //
+  // }
 
-      });
-
-  }
-
-
+LoginCubit.get(context).listCopyTo();
     // print(selectedl);
     super.initState();
 
@@ -82,20 +96,11 @@ List idSelected = [];
       },
         builder:  (context,state){
 
-
-
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-            leading: IconButton(
-              onPressed: (){
-                Navigator.pop(context);
-              },
-              icon: const Icon(
-                Icons.arrow_back,
-              ),
+            leading:const BackButton(
               color: Colors.blue,
-              iconSize: 25.0,
             ),
             backgroundColor: Colors.white,
             elevation: 0.0,
@@ -159,12 +164,12 @@ List idSelected = [];
             onPressed: () {
                 Navigator.push(context, MaterialPageRoute(
                     builder: (context)=> SelectedItem(
-                      list: selected,
+                      list: listSelectedItem,
 
 
 
                     )));
-                print(idSelected);
+
             },
             child: const Icon(
                Icons.shopping_cart
@@ -174,8 +179,8 @@ List idSelected = [];
           body:SafeArea(
 
             child: ConditionalBuilder(
-              condition:selectedl.isNotEmpty,
-              builder: (context)=>ListView.builder(itemCount: selectedl.length,
+              condition:listItem.isNotEmpty,
+              builder: (context)=>ListView.builder(itemCount: listItem.length,
 
                   itemBuilder:
                    (context, index) {
@@ -271,7 +276,7 @@ List idSelected = [];
                     //       ),
                     //     )
                     // );
-                     return selectedProduct(selectedl[index],index,selectedl[index]['value']);
+                     return selectedProductItem(listItem[index],index,listItem[index]['value']);
 
 
                   }
@@ -290,8 +295,114 @@ List idSelected = [];
 
   }
 
-Widget selectedProduct(listProduct,index,bool value)  {
-  return  Card(
+// Widget selectedProduct(listProduct,index,bool value)  {
+//
+//   return  Card(
+//       child:
+//       Padding(
+//         padding: const EdgeInsets.all(10.0),
+//         child: SingleChildScrollView(
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               Row(
+//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                 children: [
+//                   Text(
+//                       listProduct['name']
+//
+//                   ),
+//                   const SizedBox(
+//                       width: 15.0),
+//                   Text(
+//                       listProduct['quantity'].toString()
+//                   ),
+//                   const SizedBox(
+//                       width: 15.0),
+//                   Text(
+//                       '${listProduct['buy'].toString()} UM'
+//                   ),
+//                   const SizedBox(
+//                       width: 15.0),
+//                   Text('${listProduct['sell'].toString()} UM'
+//                   ),
+//                   const SizedBox(
+//                       width: 15.0),
+//
+//
+//
+//                   GestureDetector(
+//                     child: value?const Icon(
+//                       Icons.check_circle,
+//                       color: Colors.green,
+//                     ):const Icon(
+//                       Icons.check_circle_outline,
+//                       color: Colors.grey,
+//                     ),
+//                     onTap: (){
+//                       setState((){
+//                         selectedl[index]['value'] = !selectedl[index]['value'];
+//                         if(selectedl[index]['value'] ==true){
+//                           selected?.add({'id':selectedl[index]['id'],
+//                             'name':selectedl[index]['name'],
+//                             'value':true,'image':selectedl[index]['image'],
+//                             'quantity':selectedl[index]['quantity'],
+//                             'description':selectedl[index]['description'],
+//                             'sell':selectedl[index]['sell'],
+//                             'buy':selectedl[index]['buy']});
+//
+//                           print(selected);
+//
+//                         }
+//                         else if(selectedl[index]['value'] ==false){
+//                           selected?.removeWhere((element) => element['id'] == selectedl[index]['id']);
+//                           print(selected);
+//                         }
+//
+//                       });
+//
+//                     },
+//
+//                   ),
+//
+//
+//                   Expanded(
+//                     child: TextButton(
+//                       onPressed: (){
+//
+//                         Navigator.push(
+//                           context,MaterialPageRoute(builder:(context)=>
+//                             ProductsEdit(
+//
+//                               idproduct:listProduct['id'].toString(),
+//                               nameProduct:listProduct['name'],
+//                               quantity:listProduct['quantity'],
+//                               description:listProduct['description'],
+//                               image:listProduct['image'],
+//                               buy: listProduct['buy'].toString(),
+//                               sell: listProduct['sell'].toString(),
+//                             )
+//                         ),
+//
+//                         );
+//                       },
+//                       child: const Text(
+//                           'Edit'),
+//                     ),
+//
+//                   ),
+//                 ],
+//               ),
+//             ],
+//           ),
+//
+//         ),
+//       )
+//   );
+// }
+
+Widget selectedProductItem(listProductItem,index,bool value){
+  return Card(
       child:
       Padding(
         padding: const EdgeInsets.all(10.0),
@@ -303,59 +414,95 @@ Widget selectedProduct(listProduct,index,bool value)  {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                      listProduct['name']
+                      listProductItem['name']
 
                   ),
                   const SizedBox(
                       width: 15.0),
                   Text(
-                      listProduct['quantity'].toString()
+                      listProductItem['quantity'].toString()
                   ),
                   const SizedBox(
                       width: 15.0),
                   Text(
-                      '${listProduct['buy'].toString()} UM'
+                      '${listProductItem['buy'].toString()} UM'
                   ),
                   const SizedBox(
                       width: 15.0),
-                  Text('${listProduct['sell'].toString()} UM'
+                  Text('${listProductItem['sell'].toString()} UM'
                   ),
                   const SizedBox(
                       width: 15.0),
 
 
 
+                  // GestureDetector(
+                  //   child: value?const Icon(
+                  //     Icons.check_circle,
+                  //     color: Colors.green,
+                  //   ):const Icon(
+                  //     Icons.check_circle_outline,
+                  //     color: Colors.grey,
+                  //   ),
+                  //   onTap: (){
+                  //     setState((){
+                  //       selectedl[index]['value'] = !selectedl[index]['value'];
+                  //       if(selectedl[index]['value'] ==true){
+                  //         selected?.add({'id':selectedl[index]['id'],
+                  //           'name':selectedl[index]['name'],
+                  //           'value':true,'image':selectedl[index]['image'],
+                  //           'quantity':selectedl[index]['quantity'],
+                  //           'description':selectedl[index]['description'],
+                  //           'sell':selectedl[index]['sell'],
+                  //           'buy':selectedl[index]['buy']});
+                  //
+                  //         print(selected);
+                  //
+                  //       }
+                  //       else if(selectedl[index]['value'] ==false){
+                  //         selected?.removeWhere((element) => element['id'] == selectedl[index]['id']);
+                  //         print(selected);
+                  //       }
+                  //
+                  //     });
+                  //
+                  //   },
+                  //
+                  // ),
                   GestureDetector(
                     child: value?const Icon(
-                      Icons.check_circle,
-                      color: Colors.green,
-                    ):const Icon(
-                      Icons.check_circle_outline,
-                      color: Colors.grey,
-                    ),
-                    onTap: (){
+                          Icons.check_circle,
+                          color: Colors.green,
+                        ):const Icon(
+                          Icons.check_circle_outline,
+                          color: Colors.grey,
+                        ),
+                     onTap: (){
                       setState((){
-                        selectedl[index]['value'] = !selectedl[index]['value'];
-                        if(selectedl[index]['value'] ==true){
-                          selected?.add({'id':selectedl[index]['id'],
-                            'name':selectedl[index]['name'],
-                            'value':true,'image':selectedl[index]['image'],
-                            'quantity':selectedl[index]['quantity'],
-                            'description':selectedl[index]['description'],
-                            'sell':selectedl[index]['sell'],
-                            'buy':selectedl[index]['buy']});
 
-                          print(selected);
+                        listItem[index]['value']= ! listItem[index]['value'];
+                        if(listItem[index]['value']==true){
+                          listSelectedItem?.add({
+                            'id':listItem[index]['id'],
+                            'name':listItem[index]['name'],
+                            'value':true,
+                            'image':listItem[index]['image'],
+                            'quantity':listItem[index]['quantity'],
+                            'description':listItem[index]['description'],
+                            'sell':listItem[index]['sell'],
+                            'buy':listItem[index]['buy'],
+                          });
+                         print(listSelectedItem);
 
                         }
-                        else if(selectedl[index]['value'] ==false){
-                          selected?.removeWhere((element) => element['id'] == selectedl[index]['id']);
-                          print(selected);
-                        }
+                        else if(listItem[index]['value']==false){
+                          listSelectedItem.removeWhere((element) => element['id']==listItem[index]['id']);
+                          print(listSelectedItem);
 
+                        }
                       });
+                     },
 
-                    },
 
                   ),
 
@@ -368,13 +515,13 @@ Widget selectedProduct(listProduct,index,bool value)  {
                           context,MaterialPageRoute(builder:(context)=>
                             ProductsEdit(
 
-                              idproduct:listProduct['id'].toString(),
-                              nameProduct:listProduct['name'],
-                              quantity:listProduct['quantity'],
-                              description:listProduct['description'],
-                              image:listProduct['image'],
-                              buy: listProduct['buy'].toString(),
-                              sell: listProduct['sell'].toString(),
+                              idproduct:listProductItem['id'].toString(),
+                              nameProduct:listProductItem['name'],
+                              quantity:listProductItem['quantity'],
+                              description:listProductItem['description'],
+                              image:listProductItem['image'],
+                              buy: listProductItem['buy'].toString(),
+                              sell: listProductItem['sell'].toString(),
                             )
                         ),
 
@@ -395,3 +542,4 @@ Widget selectedProduct(listProduct,index,bool value)  {
   );
 }
 }
+

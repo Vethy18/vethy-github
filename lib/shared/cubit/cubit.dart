@@ -30,6 +30,22 @@ class LoginCubit extends Cubit<LoginStates> {
     ispassword = !ispassword;
     emit(PasswordState());
   }
+  void listCopyTo(){
+    for(int i=0; i < listProducts.length; i++){
+      listItem.add({'id':listProducts[i]['id'],
+        'name':listProducts[i]['name'],
+        'value':false,'image':listProducts[i]['image'],
+        'quantity':listProducts[i]['quantity'],
+        'description':listProducts[i]['description'],
+        'sell':listProducts[i]['sell'],
+        'buy':listProducts[i]['buy']});
+
+    }
+    emit(ListCopyToState());
+
+  }
+
+
 
   void createDatabase() {
     print('*********************');
@@ -61,14 +77,7 @@ class LoginCubit extends Cubit<LoginStates> {
             print('error ${error.toString()}');
           }
         });
-        database.execute(
-            'CREATE TABLE users (id INTEGER PRIMARY  KEY,name TEXT, tel INTEGER , email TEXT, pass TEXT, confpas TEXT)')
 
-            .then((value) {
-          print('table users created');
-        }).catchError((error) {
-          print('error when ${error.toString()}');
-        });
 
       },
       onOpen: (database) {
@@ -273,7 +282,7 @@ class LoginCubit extends Cubit<LoginStates> {
 
       emit(GetProductState());
 
-      print('****id** ${listProducts.length} ');
+      print('****length** ${listProducts.length} ');
 
     });
   }

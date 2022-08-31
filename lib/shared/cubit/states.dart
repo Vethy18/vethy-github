@@ -6,6 +6,8 @@ class LoginInitialState extends LoginStates{}
 
 class PasswordState extends LoginStates{}
 
+class ListCopyToState extends LoginStates{}
+
 class CreateDataBaseState extends LoginStates{}
 
 class InsertToDataBaseState extends LoginStates{}
